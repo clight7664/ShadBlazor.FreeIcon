@@ -9,10 +9,11 @@
 - SVG 渲染支持 `currentColor`、可访问性自动模式、尺寸/样式/透传属性，以及每实例
   `id`、`url(...)`、`href`、`xlink:href` 隔离。
 - .NET 8 / 9 / 10 全目标框架构建通过，1544 图标编译验证通过。
-- `/icons` 已使用真实目录查询，搜索与变体组合筛选已在本地 WASM 预览中验证。
-- `ShadBlazor.FreeIcon.1.0.0.nupkg` 与 `.snupkg` 已生成到 `release/packages`，
-  nuspec、README、许可声明、三目标框架 DLL 与符号包已验证。
-- NuGet.org 正式上传需要维护者登录或提供作用域限定的 `NUGET_API_KEY`。
+- `/` 与 `/icons` 使用真实分页目录查询；搜索、分类、变体、详情、代码复制和深色主题已在本地 WASM 预览中验证。
+- 预览采用自有 `ShadBlazor.FreeIcon` 品牌与原创 Razor/Tailwind 实现，不分发参考图的 Logo、截图、代码或品牌文案。
+- Git 仓库已初始化并连接 `https://github.com/clight7664/ShadBlazor.FreeIcon.git`，按基线、Preview、文档与发布验证分阶段推送。
+- `README.md`、解决方案目录说明、许可/署名与设计来源文档已经补齐。
+- 旧本地包已删除；所有变更完成后重新生成并验证最终 `1.0.0` 主包和符号包，避免上传旧制品。
 
 ## 一、项目目标
 

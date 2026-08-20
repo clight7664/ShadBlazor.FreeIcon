@@ -49,6 +49,16 @@ try {
         [string]::IsNullOrWhiteSpace($metadata.projectUrl)) {
         throw 'NuGet package description, release notes and project URL are required.'
     }
+    if ($metadata.projectUrl -ne 'https://github.com/clight7664/ShadBlazor.FreeIcon') {
+        throw "Unexpected project URL '$($metadata.projectUrl)'."
+    }
+    if ($metadata.repository.type -ne 'git' -or
+        $metadata.repository.url -ne 'https://github.com/clight7664/ShadBlazor.FreeIcon.git') {
+        throw 'NuGet package repository metadata is missing or invalid.'
+    }
+    if ([string] $metadata.authors -notmatch 'clight7664') {
+        throw "NuGet package authors '$($metadata.authors)' do not identify the maintainer."
+    }
 
     $expectedDependencies = @{
         'net8.0' = '8.0.0'
@@ -86,6 +96,18 @@ try {
         if ($entryNames -notcontains $entry) {
             throw "NuGet package is missing '$entry'."
         }
+    }
+
+    $noticeEntry = $archive.Entries | Where-Object FullName -EQ 'THIRD-PARTY-NOTICES.md' | Select-Object -First 1
+    $noticeReader = [System.IO.StreamReader]::new($noticeEntry.Open())
+    try {
+        $notice = $noticeReader.ReadToEnd()
+    }
+    finally {
+        $noticeReader.Dispose()
+    }
+    if ($notice -notmatch 'Leonid Tsvetkov' -or $notice -notmatch 'CC BY 4\.0') {
+        throw 'Packaged third-party notice is missing the Lets Icons author or license attribution.'
     }
 }
 finally {

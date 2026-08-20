@@ -8,3 +8,5 @@
 - Provides accessible, JavaScript-free SVG rendering with per-instance SVG ID isolation.
 - Supports Blazor on .NET 8, .NET 9 and .NET 10.
 - Ships NuGet symbols, package documentation, code license and icon-artwork attribution.
+- Includes a responsive Blazor/Tailwind icon browser with indexed filters, detail metadata, copy-ready usage samples and dark mode.
+- Publishes verifiable Git repository metadata and explicit Lets Icons CC BY 4.0 attribution.

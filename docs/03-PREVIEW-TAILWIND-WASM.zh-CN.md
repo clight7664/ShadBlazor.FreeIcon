@@ -44,4 +44,12 @@ npm run css:watch
 dotnet watch --project preview/ShadBlazor.FreeIcon.Preview/ShadBlazor.FreeIcon.Preview.csproj --launch-profile http
 ```
 
-Preview 功能：搜索、Category、Variant、分页、尺寸、颜色、Dark Mode、详情弹窗、复制 Razor 调用。
+Preview 功能：
+
+- 响应式侧栏与顶部导航；
+- 搜索、Category、Variant 和 48 条/页的目录查询；
+- 尺寸、颜色、Dark Mode 与选中态；
+- 图标元数据、Razor/动态名/Query 示例与复制；
+- 本地构建工作流、NuGet 安装入口和许可署名页面。
+
+Preview 只通过 ProjectReference 使用 RCL 的公开 API，不维护第二份 Icon 数据或渲染实现。

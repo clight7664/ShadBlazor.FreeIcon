@@ -1,39 +1,24 @@
 # Preview Optimization
 
-## Rendering Modes
-
-Card mode:
-- visual browsing
-- responsive grid
-
-List mode:
-- compact view
-- fast scanning
-
-
 ## Performance
 
 The browser does not render all 1544 icons immediately.
 
 Strategy:
 
-Initial:
-60 icons
-
-Load more:
-+60
-
-Virtualize:
-Blazor Virtualize component
+The page uses `FreeIconRegistry.Query` with a fixed page size of 48. Category and
+variant candidates come from immutable indexes created once with the catalog. Only
+the current page and one selected detail icon are rendered.
 
 
 ## Components
 
 IconBrowser/
 
-- IconToolbar.razor
+- CodeSample.razor
+- IconDetails.razor
+
+Shared preview components:
+
 - IconCard.razor
-- IconRow.razor
-- IconSkeleton.razor
-- ViewModeToggle.razor
-- LoadingIndicator.razor
+- UsageStep.razor

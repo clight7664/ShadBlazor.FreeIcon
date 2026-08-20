@@ -16,6 +16,7 @@
 | 实际变体数量 | `5` |
 | 目标框架 | `net8.0;net9.0;net10.0` |
 | NuGet 输出目录 | `release/packages` |
+| Git 仓库 | `https://github.com/clight7664/ShadBlazor.FreeIcon` |
 | 源码许可 | MIT |
 | Icon Artwork 许可 | CC BY 4.0 |
 
@@ -45,6 +46,29 @@ scripts/release/                         版本发布入口
 release/packages/                        经过验证的 NuGet 制品
 docs/                                    用户、维护、CI/CD 与发布文档
 ```
+
+### 1.1 Git 分阶段交付
+
+远程 `main` 是可构建主线。不要把结构整理、Preview 重构、文档和最终包哈希压成一个不可审阅的提交。推荐顺序：
+
+```powershell
+git status --short
+npm run repo:verify
+git add <本阶段文件>
+git commit -m "<type>: <本阶段目标>"
+git push origin main
+```
+
+v1.0.0 实际阶段：
+
+1. `chore`：建立解决方案、生成链、验证器和远程基线；
+2. `feat(preview)`：提交响应式图标工作台；
+3. `docs`：提交 README、目录边界、许可与设计来源；
+4. `release`：提交最终验证状态、哈希与版本记录；
+5. 确认远程 CI 成功后创建 `v1.0.0` tag；
+6. 使用同一 tag/commit 产生的包提交 NuGet.org。
+
+每次提交前执行 `git diff --check`，并确认 `git status` 不包含 `.vs`、`bin/obj`、`node_modules`、`release/packages`、生成 CSS、临时压缩文件或密钥。
 
 ## 2. Icon 运行时架构
 
@@ -270,8 +294,8 @@ src/ShadBlazor.FreeIcon/Generated/FreeIcons.Generated.cs
 - [ ] .NET 8/9/10 构建为 0 警告、0 错误。
 - [ ] Preview `/icons` 可启动并可搜索、过滤、分页。
 - [ ] 源码 MIT 与 Artwork CC BY 4.0 声明均已打包。
-- [ ] `PackageProjectUrl` 可访问。
-- [ ] `RepositoryUrl` 指向真实公开源码仓库；没有仓库时不要伪造地址。
+- [ ] `PackageProjectUrl` 为 `https://github.com/clight7664/ShadBlazor.FreeIcon`。
+- [ ] `RepositoryUrl` 为 `https://github.com/clight7664/ShadBlazor.FreeIcon.git`。
 - [ ] `.nupkg` 与 `.snupkg` 均已生成。
 - [ ] 独立消费者能从本地包源安装并编译。
 - [ ] NuGet.org 中不存在同 Package ID + Version。
@@ -324,11 +348,11 @@ release/packages/ShadBlazor.FreeIcon.1.0.0.snupkg
 - README、MIT、组合许可和第三方声明。
 - Symbol Package 至少包含三个 PDB。
 
-当前 v1.0.0 最终制品 SHA-256：
+当前 v1.0.0 最终制品 SHA-256 在每次最终打包后写入本节；不得沿用旧包哈希：
 
 ```text
-B2271BA1CC9BE646854636B40BB563A7DB6AF11DF21EB02D6202F6A591E94850  ShadBlazor.FreeIcon.1.0.0.nupkg
-C45D43DB6E6811226F8C119F71E1BF87E63F59FA2667807C197989B219FCD5F1  ShadBlazor.FreeIcon.1.0.0.snupkg
+<FINAL_NUPKG_SHA256>  ShadBlazor.FreeIcon.1.0.0.nupkg
+<FINAL_SNUPKG_SHA256> ShadBlazor.FreeIcon.1.0.0.snupkg
 ```
 
 重新打包后哈希必然变化，必须重新计算并更新发布记录：
@@ -402,11 +426,13 @@ API Key 最小权限建议：
    - Package Visibility 是否勾选
    - Project URL 与 Repository URL
 6. 点击 `Submit` 公开发布主包。
-7. 主包提交完成后，用相同 Upload 页面上传
-   `ShadBlazor.FreeIcon.1.0.0.snupkg`，让 NuGet Symbol Server 关联符号。
-8. 等待 NuGet.org 完成验证和索引。
+7. 等待 NuGet.org 完成主包验证和索引。
+8. 网页 Upload 流程只用于主 `.nupkg`。`.snupkg` 按 NuGet 官方符号包流程通过 NuGet V3 API 发布；不要把“在网页再次上传符号包”写成必需步骤。
 
-注意：选择文件只是进入 Verify 阶段；`Submit` 才会产生正式公开版本。
+注意：选择文件只是进入 Verify 阶段；`Submit` 才会产生正式公开版本。官方流程：
+
+- `https://learn.microsoft.com/nuget/nuget-org/publish-a-package`
+- `https://learn.microsoft.com/nuget/create-packages/symbol-packages-snupkg`
 
 ## 12. CLI 发布流程
 
@@ -432,7 +458,15 @@ dotnet nuget push `
   --skip-duplicate
 ```
 
-当 `.snupkg` 与 `.nupkg` 同目录且同基础名称时，`dotnet nuget push` 会同时处理符号包。
+发布符号包需要 NuGet V3 源。执行后必须查看输出，确认主包与 `.snupkg` 均已推送；如果脚本/客户端没有自动推送符号包，则显式执行：
+
+```powershell
+dotnet nuget push `
+  release\packages\ShadBlazor.FreeIcon.1.0.0.snupkg `
+  --api-key $env:NUGET_API_KEY `
+  --source https://api.nuget.org/v3/index.json `
+  --skip-duplicate
+```
 
 ## 13. GitHub Actions 自动发布
 

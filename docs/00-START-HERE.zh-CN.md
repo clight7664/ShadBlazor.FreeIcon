@@ -1,5 +1,7 @@
 # 00 - 从这里开始
 
+仓库：`https://github.com/clight7664/ShadBlazor.FreeIcon`
+
 ## 1. 先覆盖旧仓库还是新建目录？
 
 推荐把本代码包解压为一个全新目录，例如：
@@ -77,4 +79,10 @@ tools\commands\repair.cmd
 
 ```text
 docs/09-ICON-ARCHITECTURE-AND-NUGET-RELEASE.zh-CN.md
+```
+
+许可、署名与预览设计来源见：
+
+```text
+docs/10-LICENSE-AND-DESIGN-PROVENANCE.zh-CN.md
 ```

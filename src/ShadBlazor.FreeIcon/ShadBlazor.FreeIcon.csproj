@@ -4,7 +4,7 @@
     <AssemblyName>ShadBlazor.FreeIcon</AssemblyName>
     <RootNamespace>ShadBlazor.FreeIcon</RootNamespace>
     <Version>1.0.0</Version>
-    <Authors>ShadBlazor Contributors</Authors>
+    <Authors>clight7664;ShadBlazor Contributors</Authors>
     <Title>ShadBlazor.FreeIcon</Title>
     <Description>Strongly typed, JavaScript-free Blazor SVG icons based on Lets Icons.</Description>
     <PackageId>ShadBlazor.FreeIcon</PackageId>
@@ -12,6 +12,7 @@
     <PackageProjectUrl>https://github.com/clight7664/ShadBlazor.FreeIcon</PackageProjectUrl>
     <RepositoryUrl>https://github.com/clight7664/ShadBlazor.FreeIcon.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>PACKAGE-LICENSE.txt</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
