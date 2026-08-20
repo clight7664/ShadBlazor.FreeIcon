@@ -13,7 +13,7 @@
 - 预览采用自有 `ShadBlazor.FreeIcon` 品牌与原创 Razor/Tailwind 实现，不分发参考图的 Logo、截图、代码或品牌文案。
 - Git 仓库已初始化并连接 `https://github.com/clight7664/ShadBlazor.FreeIcon.git`，按基线、Preview、文档与发布验证分阶段推送。
 - `README.md`、解决方案目录说明、许可/署名与设计来源文档已经补齐。
-- 旧本地包已删除；所有变更完成后重新生成并验证最终 `1.0.0` 主包和符号包，避免上传旧制品。
+- 旧本地包已删除；最终 `1.0.0` 主包和符号包已从提交 `66f8865` 重新生成，包内容、Repository metadata、许可署名与独立 .NET 8 消费路径均已验证。
 
 ## 一、项目目标
 

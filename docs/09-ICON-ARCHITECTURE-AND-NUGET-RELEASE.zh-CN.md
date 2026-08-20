@@ -351,8 +351,8 @@ release/packages/ShadBlazor.FreeIcon.1.0.0.snupkg
 当前 v1.0.0 最终制品 SHA-256 在每次最终打包后写入本节；不得沿用旧包哈希：
 
 ```text
-<FINAL_NUPKG_SHA256>  ShadBlazor.FreeIcon.1.0.0.nupkg
-<FINAL_SNUPKG_SHA256> ShadBlazor.FreeIcon.1.0.0.snupkg
+4820A6FBF69F8DDBD24B9F6641B5D7C90F9482A6FC45C0D5EBB480585B0FE032  ShadBlazor.FreeIcon.1.0.0.nupkg
+A3E6D4D24E916F8CC3BAC383FE68B605B193C799EEC0C400ABEE1570878C057F  ShadBlazor.FreeIcon.1.0.0.snupkg
 ```
 
 重新打包后哈希必然变化，必须重新计算并更新发布记录：

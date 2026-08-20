@@ -23,13 +23,23 @@ targeting packs, Node.js and the pinned npm toolchain.
      `xlink:href` references.
 4. The local `/icons` route loaded all 1544 catalog entries. Searching `arrow` with
    the `Light` variant produced 43 matching icons and rendered only those results.
+   Browser-driven checks also verified `home` search (5 matches), selection-driven
+   metadata/code updates, dark mode, and the Usage and License routes.
 5. `scripts/release/release.cmd 1.0.0` completed and the package verifier confirmed:
    - package ID and version;
    - README, MIT license, composite package license and third-party notices;
    - assemblies for `net8.0`, `net9.0` and `net10.0`;
    - symbol package PDBs.
-6. A clean .NET 8 Razor class library installed version 1.0.0 exclusively from
-   `release/packages` and compiled strongly typed, dynamic-name and query API usage.
+6. A clean .NET 8 Razor class library used an isolated empty global-packages folder,
+   mapped `ShadBlazor.FreeIcon` exclusively to `release/packages`, restored other
+   Microsoft dependencies from NuGet.org, and compiled strongly typed, dynamic-name,
+   accessible-label and query API usage with zero warnings and zero errors.
+
+Release source commit embedded in the package nuspec:
+
+```text
+66f8865f64a58f82a0a04d8e22f98607d659ae84
+```
 
 ## Release artifacts
 
@@ -41,8 +51,8 @@ release/packages/ShadBlazor.FreeIcon.1.0.0.snupkg
 SHA-256:
 
 ```text
-B2271BA1CC9BE646854636B40BB563A7DB6AF11DF21EB02D6202F6A591E94850  ShadBlazor.FreeIcon.1.0.0.nupkg
-C45D43DB6E6811226F8C119F71E1BF87E63F59FA2667807C197989B219FCD5F1  ShadBlazor.FreeIcon.1.0.0.snupkg
+4820A6FBF69F8DDBD24B9F6641B5D7C90F9482A6FC45C0D5EBB480585B0FE032  ShadBlazor.FreeIcon.1.0.0.nupkg
+A3E6D4D24E916F8CC3BAC383FE68B605B193C799EEC0C400ABEE1570878C057F  ShadBlazor.FreeIcon.1.0.0.snupkg
 ```
 
 NuGet.org returned 404 for the package flat-container endpoint before publication,
