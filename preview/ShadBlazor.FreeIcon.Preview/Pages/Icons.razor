@@ -1,1 +1,252 @@
-@* The complete browser is routed from Home.razor to both / and /icons. *@
+@page "/"
+@page "/icons"
+@inject IJSRuntime JS
+
+<PageTitle>Icon browser · ShadBlazor.FreeIcon</PageTitle>
+
+<div class="mx-auto max-w-[1680px] px-4 py-6 sm:px-6 lg:py-7">
+    <div class="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end">
+        <div>
+            <div class="mb-2 flex items-center gap-2 text-xs font-medium text-indigo-600 dark:text-indigo-300">
+                <span class="size-1.5 rounded-full bg-indigo-500"></span>
+                Complete Lets Icons catalog for Blazor
+            </div>
+            <h1 class="text-3xl font-bold tracking-tight">Icons</h1>
+            <p class="mt-1 text-sm text-muted-foreground">Browse, filter and copy production-ready Razor snippets.</p>
+        </div>
+        <div class="relative w-full xl:ml-auto xl:max-w-xl">
+            <FreeIcon Name="search" Size="17px" Class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" Decorative="true" />
+            <input class="h-11 w-full rounded-lg border bg-card pl-10 pr-4 text-sm shadow-sm outline-none placeholder:text-muted-foreground focus:border-indigo-400 focus:ring-3 focus:ring-indigo-500/10"
+                   aria-label="Search icons" placeholder="Search icons, categories or C# property names…"
+                   @bind="_query" @bind:event="oninput" @bind:after="ApplyFilters" />
+        </div>
+    </div>
+
+    <div class="grid items-start gap-5 2xl:grid-cols-[minmax(0,1fr)_430px]">
+        <div class="min-w-0">
+            <section class="rounded-xl border bg-card p-3 shadow-sm sm:p-4">
+                <div class="flex flex-col gap-3 xl:flex-row xl:items-center">
+                    <div class="flex min-w-0 gap-1 overflow-x-auto pb-1 xl:pb-0">
+                        <button type="button" class="category-pill @CategoryClass(string.Empty)" @onclick="() => SelectCategory(string.Empty)">
+                            All <span>@FreeIconRegistry.All.Count</span>
+                        </button>
+                        @foreach (var category in FeaturedCategories)
+                        {
+                            <button type="button" class="category-pill @CategoryClass(category)" @onclick="() => SelectCategory(category)">
+                                @CategoryLabel(category) <span>@CategoryCount(category)</span>
+                            </button>
+                        }
+                    </div>
+                    <div class="flex items-center gap-2 xl:ml-auto">
+                        <label class="sr-only" for="variant">Variant</label>
+                        <select id="variant" class="h-9 min-w-36 rounded-md border bg-background px-3 text-xs outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                @bind="_variant" @bind:after="ApplyFilters">
+                            <option value="">All variants</option>
+                            @foreach (var variant in FreeIconRegistry.Variants)
+                            {
+                                <option value="@variant.ToString()">@variant</option>
+                            }
+                        </select>
+                        <button type="button" class="inline-flex h-9 items-center gap-2 rounded-md border px-3 text-xs font-medium hover:bg-accent" @onclick="ClearFilters">
+                            <FreeIcon Name="filter" Size="14px" /> Reset
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="my-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                <span><strong class="text-foreground">@_result.TotalCount</strong> matching icons</span>
+                <span>Page @_page of @PageCount</span>
+                <label class="ml-auto flex items-center gap-2">
+                    Preview size
+                    <input type="range" min="20" max="48" step="4" @bind="_size" class="w-24 accent-indigo-600" />
+                    <span class="w-9 text-right text-foreground">@_size px</span>
+                </label>
+                <label class="flex items-center gap-2">
+                    Color
+                    <input type="color" class="size-7 cursor-pointer rounded-md border bg-transparent p-0.5" @bind="_color" />
+                </label>
+            </div>
+
+            @if (_result.Items.Count == 0)
+            {
+                <div class="grid min-h-80 place-items-center rounded-xl border border-dashed bg-muted/20 p-8 text-center">
+                    <div>
+                        <FreeIcon Name="search" Size="36px" Class="mx-auto text-muted-foreground" />
+                        <h2 class="mt-4 font-semibold">No icons found</h2>
+                        <p class="mt-1 text-sm text-muted-foreground">Try another keyword, category or variant.</p>
+                        <button type="button" class="mt-4 rounded-md border px-3 py-2 text-sm hover:bg-accent" @onclick="ClearFilters">Clear filters</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                    @foreach (var icon in _result.Items)
+                    {
+                        <IconCard Icon="@icon" Size="@_size" Color="@_color" Selected="@(_selected?.Name == icon.Name)" OnOpen="SelectIcon" OnCopy="CopyText" />
+                    }
+                </div>
+            }
+
+            @if (PageCount > 1)
+            {
+                <nav class="mt-6 flex items-center justify-center gap-1" aria-label="Icon result pages">
+                    <button type="button" class="pager-button" disabled="@(_page == 1)" @onclick="PreviousPage" aria-label="Previous page">
+                        <FreeIcon Name="arrow-left" Size="15px" />
+                    </button>
+                    @foreach (var pageNumber in VisiblePages)
+                    {
+                        <button type="button" class="pager-button @(pageNumber == _page ? "pager-button-active" : string.Empty)" @onclick="() => GoToPage(pageNumber)">@pageNumber</button>
+                    }
+                    <button type="button" class="pager-button" disabled="@(_page == PageCount)" @onclick="NextPage" aria-label="Next page">
+                        <FreeIcon Name="arrow-right" Size="15px" />
+                    </button>
+                </nav>
+            }
+        </div>
+
+        <aside class="grid gap-4 2xl:sticky 2xl:top-[92px]">
+            @if (_selected is not null)
+            {
+                <IconDetails Icon="@_selected" Color="@_color" OnCopy="CopyText" />
+                <CodeSample Icon="@_selected" OnCopy="CopyText" />
+            }
+        </aside>
+    </div>
+
+    <section class="mt-7 grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,1fr)]">
+        <div class="rounded-xl border bg-card p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+                <span class="grid size-9 place-items-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300"><FreeIcon Name="code" Size="19px" /></span>
+                <div><h2 class="font-semibold">Local workflow</h2><p class="text-xs text-muted-foreground">Repeatable generation, validation and packaging.</p></div>
+            </div>
+            <div class="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                @foreach (var step in Workflow)
+                {
+                    <div class="rounded-lg border bg-muted/20 p-3">
+                        <span class="text-[10px] font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-300">@step.Number</span>
+                        <div class="mt-1 text-sm font-semibold">@step.Title</div>
+                        <code class="mt-2 block truncate rounded bg-muted px-2 py-1.5 text-[10px] text-muted-foreground">@step.Command</code>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="rounded-xl border bg-card p-5 shadow-sm">
+            <div class="flex items-start gap-3">
+                <span class="grid size-11 place-items-center rounded-xl bg-linear-to-br from-indigo-500 to-blue-600 text-white shadow-lg shadow-indigo-500/20"><FreeIcon Name="package" Size="23px" /></span>
+                <div><h2 class="font-semibold">ShadBlazor.FreeIcon</h2><p class="text-xs text-muted-foreground">NuGet package · v1.0.0</p></div>
+            </div>
+            <button type="button" class="mt-5 flex w-full items-center rounded-lg border bg-muted/20 p-3 text-left font-mono text-xs hover:bg-accent" @onclick="CopyInstall">
+                <span class="truncate">dotnet add package ShadBlazor.FreeIcon</span><FreeIcon Name="copy" Size="14px" Class="ml-auto shrink-0" />
+            </button>
+            <div class="mt-4 flex flex-wrap gap-2 text-[10px] font-medium">
+                <span class="rounded bg-slate-900 px-2 py-1 text-white">NuGet</span><span class="rounded bg-indigo-600 px-2 py-1 text-white">v1.0.0</span><span class="rounded bg-muted px-2 py-1">MIT + CC BY 4.0</span>
+            </div>
+        </div>
+    </section>
+</div>
+
+@if (_toast is not null)
+{
+    <div class="fixed bottom-5 right-5 z-[70] flex items-center gap-2 rounded-lg border bg-popover px-4 py-3 text-sm text-popover-foreground shadow-xl">
+        <span class="grid size-5 place-items-center rounded-full bg-emerald-500 text-white">✓</span> @_toast
+    </div>
+}
+
+@code {
+    private const int PageSize = 48;
+    private static readonly string[] FeaturedCategories = ["Arrow", "UI", "Media", "File Types", "User and Group"];
+    private static readonly (string Number, string Title, string Command)[] Workflow =
+    [
+        ("01", "Synchronize", "npm run icons:sync"),
+        ("02", "Validate", "npm run verify"),
+        ("03", "Build", "eng\\build.cmd"),
+        ("04", "Package", "eng\\pack.cmd")
+    ];
+
+    private string _query = string.Empty;
+    private string _category = string.Empty;
+    private string _variant = string.Empty;
+    private string _color = "#4f46e5";
+    private int _size = 28;
+    private int _page = 1;
+    private FreeIconData? _selected;
+    private FreeIconQueryResult _result = FreeIconRegistry.Query(new FreeIconQuery { Take = PageSize });
+    private string? _toast;
+    private CancellationTokenSource? _toastCts;
+
+    protected override void OnInitialized()
+    {
+        _selected = FreeIconRegistry.TryGet("3d-box", out var brandIcon) ? brandIcon : FreeIconRegistry.All[0];
+    }
+
+    private int PageCount => Math.Max(1, (int)Math.Ceiling(_result.TotalCount / (double)PageSize));
+    private IEnumerable<int> VisiblePages
+    {
+        get
+        {
+            var start = Math.Max(1, Math.Min(_page - 2, PageCount - 4));
+            var end = Math.Min(PageCount, start + 4);
+            return Enumerable.Range(start, Math.Max(0, end - start + 1));
+        }
+    }
+
+    private void ApplyFilters()
+    {
+        _page = 1;
+        LoadPage();
+    }
+
+    private void LoadPage()
+    {
+        var variant = Enum.TryParse<FreeIconVariant>(_variant, out var parsed) ? parsed : (FreeIconVariant?)null;
+        _result = FreeIconRegistry.Query(new FreeIconQuery
+        {
+            Text = _query,
+            Category = _category,
+            Variant = variant,
+            Skip = (_page - 1) * PageSize,
+            Take = PageSize
+        });
+    }
+
+    private void SelectCategory(string category)
+    {
+        _category = category;
+        ApplyFilters();
+    }
+
+    private void ClearFilters()
+    {
+        _query = string.Empty;
+        _category = string.Empty;
+        _variant = string.Empty;
+        ApplyFilters();
+    }
+
+    private string CategoryClass(string category) => string.Equals(category, _category, StringComparison.OrdinalIgnoreCase) ? "category-pill-active" : string.Empty;
+    private static string CategoryLabel(string category) => category switch { "File Types" => "Files", "User and Group" => "Users", _ => category };
+    private static int CategoryCount(string category) => FreeIconRegistry.InCategory(category).Count;
+    private void SelectIcon(FreeIconData icon) => _selected = icon;
+    private void PreviousPage() => GoToPage(Math.Max(1, _page - 1));
+    private void NextPage() => GoToPage(Math.Min(PageCount, _page + 1));
+    private void GoToPage(int page) { _page = page; LoadPage(); }
+    private Task CopyInstall() => CopyText("dotnet add package ShadBlazor.FreeIcon --version 1.0.0");
+
+    private async Task CopyText(string text)
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        _toastCts?.Cancel();
+        _toastCts?.Dispose();
+        _toastCts = new CancellationTokenSource();
+        _toast = "Copied to clipboard";
+        try
+        {
+            await Task.Delay(1500, _toastCts.Token);
+            _toast = null;
+            StateHasChanged();
+        }
+        catch (OperationCanceledException) { }
+    }
+}

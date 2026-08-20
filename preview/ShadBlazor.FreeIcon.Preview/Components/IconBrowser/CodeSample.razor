@@ -1,0 +1,39 @@
+<section class="overflow-hidden rounded-xl border bg-card shadow-sm">
+    <div class="flex items-center border-b px-4 py-3">
+        <div>
+            <h2 class="text-sm font-semibold">Razor component</h2>
+            <p class="text-xs text-muted-foreground">Use the selected icon in a Blazor view.</p>
+        </div>
+        <div class="ml-auto flex rounded-lg bg-muted p-1 text-[11px]">
+            @foreach (var tab in Tabs)
+            {
+                <button type="button" class="rounded-md px-2.5 py-1.5 font-medium @(tab == _tab ? "bg-background text-foreground shadow-sm" : "text-muted-foreground")" @onclick="() => _tab = tab">@tab</button>
+            }
+        </div>
+    </div>
+    <div class="p-4">
+        <div class="relative overflow-hidden rounded-lg bg-slate-950 p-4 text-slate-100 shadow-inner">
+            <button type="button" class="absolute right-2 top-2 inline-flex items-center gap-1 rounded border border-white/15 bg-white/5 px-2 py-1 text-[10px] text-slate-300 hover:bg-white/10" @onclick="Copy">
+                <FreeIcon Name="copy" Size="12px" /> Copy
+            </button>
+            <pre class="overflow-x-auto pr-14 text-xs leading-6"><code>@CurrentCode</code></pre>
+        </div>
+    </div>
+</section>
+
+@code {
+    private static readonly string[] Tabs = ["Razor", "Dynamic", "Query"];
+    private string _tab = "Razor";
+
+    [Parameter, EditorRequired] public FreeIconData Icon { get; set; } = default!;
+    [Parameter] public EventCallback<string> OnCopy { get; set; }
+
+    private string CurrentCode => _tab switch
+    {
+        "Dynamic" => $"<FreeIcon Name=\"{Icon.Name}\"\n          Size=\"24px\"\n          Class=\"text-indigo-600\" />",
+        "Query" => $"var icon = FreeIconRegistry.Get(\"{Icon.Name}\");\n\n// Render with <FreeIcon Icon=\"@icon\" />",
+        _ => $"<FreeIcon Icon=\"@FreeIcons.{Icon.CSharpPropertyName}\"\n          Size=\"24px\"\n          Class=\"text-indigo-600\" />"
+    };
+
+    private Task Copy() => OnCopy.InvokeAsync(CurrentCode);
+}

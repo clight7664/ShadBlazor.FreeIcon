@@ -1,35 +1,87 @@
 @inherits LayoutComponentBase
 
 <div class="@ThemeClass min-h-screen bg-background text-foreground transition-colors">
-    <header class="sticky top-0 z-40 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-        <div class="mx-auto flex h-16 max-w-[1600px] items-center gap-4 px-4 sm:px-6 lg:px-8">
-            <a href="./" class="flex min-w-0 items-center gap-3 font-semibold tracking-tight">
-                <span class="grid size-9 place-items-center rounded-lg border bg-card shadow-sm">
-                    <FreeIcon Name="3d-box" Size="20px" />
-                </span>
-                <span class="truncate">ShadBlazor.FreeIcon</span>
-            </a>
-            <div class="ml-auto flex items-center gap-2">
-                <span class="hidden rounded-full border bg-muted px-3 py-1 text-xs text-muted-foreground sm:inline-flex">
-                    @FreeIconRegistry.All.Count icons
-                </span>
-                <button type="button"
-                        class="inline-flex size-9 items-center justify-center rounded-md border bg-background shadow-sm hover:bg-accent"
-                        title="Toggle theme"
-                        @onclick="ToggleTheme">
-                    <FreeIcon Name="@(_dark ? "sun" : "moon")" Size="18px" />
-                </button>
+    <aside class="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r bg-card lg:flex">
+        <a href="./" class="flex h-[72px] items-center gap-3 border-b px-5">
+            <span class="brand-mark grid size-10 place-items-center rounded-xl text-white shadow-lg shadow-indigo-500/20">
+                <FreeIcon Name="3d-box" Size="23px" />
+            </span>
+            <span class="min-w-0">
+                <span class="block truncate font-semibold tracking-tight">ShadBlazor.FreeIcon</span>
+                <span class="block text-xs text-muted-foreground">Blazor icon components</span>
+            </span>
+            <span class="ml-auto rounded bg-indigo-50 px-2 py-1 text-[10px] font-semibold text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">v1.0.0</span>
+        </a>
+
+        <nav class="flex-1 space-y-6 overflow-y-auto px-3 py-5 text-sm">
+            <NavGroup Title="Getting started">
+                <NavLink href="./" Match="NavLinkMatch.All" class="side-link" ActiveClass="side-link-active">
+                    <FreeIcon Name="home" Size="17px" /> Overview
+                </NavLink>
+                <NavLink href="icons" class="side-link" ActiveClass="side-link-active">
+                    <FreeIcon Name="search" Size="17px" /> Icons
+                </NavLink>
+                <NavLink href="usage" class="side-link" ActiveClass="side-link-active">
+                    <FreeIcon Name="code" Size="17px" /> Usage
+                </NavLink>
+            </NavGroup>
+            <NavGroup Title="Resources">
+                <NavLink href="license" class="side-link" ActiveClass="side-link-active">
+                    <FreeIcon Name="info" Size="17px" /> License & attribution
+                </NavLink>
+                <a class="side-link" href="https://www.nuget.org/packages/ShadBlazor.FreeIcon" target="_blank" rel="noopener noreferrer">
+                    <FreeIcon Name="package" Size="17px" /> NuGet
+                </a>
+                <a class="side-link" href="https://github.com/clight7664/ShadBlazor.FreeIcon" target="_blank" rel="noopener noreferrer">
+                    <FreeIcon Name="code" Size="17px" /> GitHub
+                </a>
+            </NavGroup>
+        </nav>
+
+        <div class="m-3 rounded-xl border bg-muted/35 p-4 text-xs leading-5 text-muted-foreground">
+            <div class="mb-2 flex items-center gap-2 font-semibold text-foreground">
+                <span class="size-2 rounded-full bg-emerald-500"></span>
+                Open source
             </div>
+            Library code is MIT. Icon artwork is used under CC BY 4.0 with attribution.
         </div>
-    </header>
+    </aside>
 
-    <main>
-        @Body
-    </main>
+    <div class="min-h-screen lg:pl-64">
+        <header class="sticky top-0 z-40 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+            <div class="flex h-[72px] items-center gap-3 px-4 sm:px-6">
+                <a href="./" class="flex items-center gap-2 font-semibold lg:hidden">
+                    <span class="brand-mark grid size-9 place-items-center rounded-lg text-white"><FreeIcon Name="3d-box" Size="20px" /></span>
+                    <span class="hidden sm:inline">ShadBlazor.FreeIcon</span>
+                </a>
+                <a href="icons" class="hidden h-10 w-full max-w-xl items-center gap-3 rounded-lg border bg-muted/25 px-3 text-sm text-muted-foreground shadow-xs md:flex">
+                    <FreeIcon Name="search" Size="17px" />
+                    <span>Search @FreeIconRegistry.All.Count icons…</span>
+                    <kbd class="ml-auto rounded border bg-background px-2 py-0.5 text-[11px]">Ctrl K</kbd>
+                </a>
+                <nav class="ml-auto flex items-center gap-1 text-sm">
+                    <a class="top-link" href="usage">Docs</a>
+                    <a class="top-link hidden sm:inline-flex" href="https://github.com/clight7664/ShadBlazor.FreeIcon" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    <button type="button" class="ml-1 inline-flex size-9 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-accent"
+                            title="Toggle color theme" aria-label="Toggle color theme" @onclick="ToggleTheme">
+                        <FreeIcon Name="@(_dark ? "sun" : "moon")" Size="17px" />
+                    </button>
+                </nav>
+            </div>
+            <nav class="flex gap-1 overflow-x-auto border-t px-3 py-2 text-sm lg:hidden">
+                <NavLink href="./" Match="NavLinkMatch.All" class="mobile-link" ActiveClass="mobile-link-active">Overview</NavLink>
+                <NavLink href="icons" class="mobile-link" ActiveClass="mobile-link-active">Icons</NavLink>
+                <NavLink href="usage" class="mobile-link" ActiveClass="mobile-link-active">Usage</NavLink>
+                <NavLink href="license" class="mobile-link" ActiveClass="mobile-link-active">License</NavLink>
+            </nav>
+        </header>
 
-    <footer class="border-t py-8 text-center text-sm text-muted-foreground">
-        Library code: MIT · Lets Icons artwork: CC BY 4.0
-    </footer>
+        <main>@Body</main>
+
+        <footer class="border-t px-6 py-7 text-center text-xs text-muted-foreground">
+            ShadBlazor.FreeIcon · Library code MIT · Lets Icons artwork © Leonid Tsvetkov, CC BY 4.0
+        </footer>
+    </div>
 </div>
 
 @code {

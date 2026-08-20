@@ -1,0 +1,39 @@
+<section class="overflow-hidden rounded-xl border bg-card shadow-sm">
+    <div class="icon-stage grid min-h-52 place-items-center border-b p-8">
+        <FreeIcon Icon="@Icon" Size="96px" Style="@($"color:{Color}")" Decorative="true" />
+    </div>
+    <div class="p-4">
+        <div class="text-[11px] font-semibold uppercase tracking-[0.13em] text-indigo-600 dark:text-indigo-300">Selected icon</div>
+        <h2 class="mt-1 break-all text-xl font-semibold tracking-tight">@Icon.Name</h2>
+        <p class="mt-1 text-sm text-muted-foreground">@Icon.Variant · @Icon.Width × @Icon.Height</p>
+        <div class="mt-4 flex flex-wrap gap-1.5">
+            @foreach (var category in Icon.Categories)
+            {
+                <span class="rounded-full border bg-muted/40 px-2 py-1 text-[11px] text-muted-foreground">@category</span>
+            }
+        </div>
+        <dl class="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t pt-4 text-xs">
+            <dt class="text-muted-foreground">ViewBox</dt><dd class="text-right font-mono">@Icon.ViewBox</dd>
+            <dt class="text-muted-foreground">Property</dt><dd class="truncate text-right font-mono">@Icon.CSharpPropertyName</dd>
+        </dl>
+        <div class="mt-4 grid grid-cols-2 gap-2">
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2 text-xs font-medium text-primary-foreground hover:opacity-90" @onclick="CopyStrong">
+                <FreeIcon Name="copy" Size="14px" /> Copy Razor
+            </button>
+            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-xs font-medium hover:bg-accent" @onclick="CopyDynamic">
+                Copy dynamic
+            </button>
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public FreeIconData Icon { get; set; } = default!;
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public EventCallback<string> OnCopy { get; set; }
+
+    private string StrongUsage => $"<FreeIcon Icon=\"@FreeIcons.{Icon.CSharpPropertyName}\" Size=\"24px\" />";
+    private string DynamicUsage => $"<FreeIcon Name=\"{Icon.Name}\" Size=\"24px\" />";
+    private Task CopyStrong() => OnCopy.InvokeAsync(StrongUsage);
+    private Task CopyDynamic() => OnCopy.InvokeAsync(DynamicUsage);
+}

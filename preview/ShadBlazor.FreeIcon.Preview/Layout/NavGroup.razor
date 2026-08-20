@@ -1,0 +1,9 @@
+<section>
+    <h2 class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">@Title</h2>
+    <div class="space-y-1">@ChildContent</div>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public RenderFragment ChildContent { get; set; } = default!;
+}
