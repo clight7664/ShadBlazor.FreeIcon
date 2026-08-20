@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <AssemblyName>ShadBlazor.FreeIcon</AssemblyName>
+    <RootNamespace>ShadBlazor.FreeIcon</RootNamespace>
+    <Version>1.0.0</Version>
+    <Authors>ShadBlazor Contributors</Authors>
+    <Title>ShadBlazor.FreeIcon</Title>
+    <Description>Strongly typed, JavaScript-free Blazor SVG icons based on Lets Icons.</Description>
+    <PackageId>ShadBlazor.FreeIcon</PackageId>
+    <PackageTags>blazor;razor;icons;svg;shadblazor;lets-icons</PackageTags>
+    <PackageProjectUrl>https://github.com/clight7664/ShadBlazor.FreeIcon</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/clight7664/ShadBlazor.FreeIcon.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>PACKAGE-LICENSE.txt</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>First stable release: 1544 strongly typed Lets Icons, dynamic lookup, filtered and paged catalog queries, accessible SVG rendering, and per-instance SVG ID isolation.</PackageReleaseNotes>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <EmbeddedResource Include="Resources\lets-icons.json"
+                      LogicalName="ShadBlazor.FreeIcon.Resources.lets-icons.json"
+                      Condition="Exists('Resources\lets-icons.json')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="" Link="README.md" />
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="" Link="LICENSE" />
+    <None Include="..\..\PACKAGE-LICENSE.txt" Pack="true" PackagePath="" Link="PACKAGE-LICENSE.txt" />
+    <None Include="..\..\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="" Link="THIRD-PARTY-NOTICES.md" />
+  </ItemGroup>
+
+  <Target Name="EnsureCompleteIconCatalogForPack" BeforeTargets="Pack">
+    <Error Condition="!Exists('Resources\lets-icons.json')"
+           Text="Complete Lets Icons catalog is missing. Run tools\commands\bootstrap.cmd first." />
+    <Error Condition="!Exists('Generated\FreeIcons.Generated.cs')"
+           Text="Generated strongly typed API is missing. Run tools\commands\bootstrap.cmd first." />
+  </Target>
+</Project>

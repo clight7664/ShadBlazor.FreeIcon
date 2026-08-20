@@ -1,0 +1,11 @@
+{
+  "source": "@iconify-json/lets-icons",
+  "version": "1.2.2",
+  "integrity": "sha512-GBCeFoWNLA5v1ZRIM54cZGpE/lHtFcSJjxXXCi2W5SxkJoPDonNoLGf61/z8eNxiBkegynClvEgCAs0YjLeZkA==",
+  "expectedCanonicalIconCount": 1544,
+  "figmaCommunityFile": "https://www.figma.com/community/file/886554014393250663",
+  "license": "CC-BY-4.0",
+  "figmaObservedComponentCount": 1932,
+  "figmaObservedUniqueNames": 1681,
+  "figmaObservedDuplicateNameGroups": 149
+}

@@ -1,0 +1,11 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "dotnet.defaultSolution": "ShadBlazor.FreeIcon.sln",
+    "tailwindCSS.experimental.configFile": "configs/tailwind/app.css"
+  }
+}

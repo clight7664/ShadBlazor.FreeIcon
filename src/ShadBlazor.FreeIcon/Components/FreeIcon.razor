@@ -1,0 +1,89 @@
+@namespace ShadBlazor.FreeIcon
+
+<svg @attributes="AdditionalAttributes"
+     class="@Class"
+     style="@Style"
+     width="@EffectiveWidth"
+     height="@EffectiveHeight"
+     viewBox="@ResolvedIcon.ViewBox"
+     xmlns="http://www.w3.org/2000/svg"
+     color="@Color"
+     preserveAspectRatio="@PreserveAspectRatio"
+     role="@Role"
+     aria-hidden="@AriaHidden"
+     aria-label="@EffectiveAriaLabel"
+     aria-labelledby="@AriaLabelledBy"
+     focusable="false">
+    @if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <title id="@TitleId">@Title</title>
+    }
+    @((MarkupString)_renderBody)
+</svg>
+
+@code {
+    private readonly string _idPrefix = $"sbf-{Guid.NewGuid():N}";
+    private string _renderBody = string.Empty;
+    private FreeIconData? _resolvedIcon;
+
+    [Parameter]
+    public FreeIconData? Icon { get; set; }
+
+    /// <summary>Canonical kebab-case name. Use either Icon or Name.</summary>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>Width and height when Width/Height are omitted. Default: 1em.</summary>
+    [Parameter]
+    public string Size { get; set; } = "1em";
+
+    [Parameter] public string? Width { get; set; }
+    [Parameter] public string? Height { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter] public string? Color { get; set; }
+    [Parameter] public string PreserveAspectRatio { get; set; } = "xMidYMid meet";
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? AriaLabel { get; set; }
+
+    /// <summary>
+    /// Overrides automatic accessibility mode. By default an icon is decorative unless
+    /// <see cref="Title"/> or <see cref="AriaLabel"/> is supplied.
+    /// </summary>
+    [Parameter] public bool? Decorative { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private FreeIconData ResolvedIcon => _resolvedIcon
+        ?? throw new InvalidOperationException("FreeIcon has not been initialized.");
+
+    private string EffectiveWidth => Width ?? Size;
+    private string EffectiveHeight => Height ?? Size;
+    private string TitleId => $"{_idPrefix}-title";
+    private string? EffectiveAriaLabel => IsDecorative || !string.IsNullOrWhiteSpace(Title)
+        ? null
+        : string.IsNullOrWhiteSpace(AriaLabel) ? ResolvedIcon.Name : AriaLabel;
+    private string? AriaLabelledBy => IsDecorative || string.IsNullOrWhiteSpace(Title)
+        ? null
+        : TitleId;
+    private bool IsDecorative => Decorative
+        ?? (string.IsNullOrWhiteSpace(AriaLabel) && string.IsNullOrWhiteSpace(Title));
+    private string? Role => IsDecorative ? null : "img";
+    private string? AriaHidden => IsDecorative ? "true" : null;
+
+    protected override void OnParametersSet()
+    {
+        if (Icon is not null && !string.IsNullOrWhiteSpace(Name))
+        {
+            throw new InvalidOperationException("FreeIcon accepts either Icon or Name, not both.");
+        }
+
+        _resolvedIcon = Icon ?? (!string.IsNullOrWhiteSpace(Name)
+            ? FreeIconRegistry.Get(Name)
+            : throw new InvalidOperationException(
+                "FreeIcon requires Icon or Name. Examples: <FreeIcon Icon=\"@FreeIcons.Add\" /> or <FreeIcon Name=\"add\" />."));
+
+        _renderBody = SvgIdRewriter.Rewrite(_resolvedIcon.Body, _idPrefix);
+    }
+}

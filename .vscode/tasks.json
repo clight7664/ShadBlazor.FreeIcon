@@ -1,0 +1,119 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "repo: doctor",
+      "type": "shell",
+      "windows": {
+        "command": "${workspaceFolder}\\tools\\commands\\doctor.cmd"
+      },
+      "linux": {
+        "command": "${workspaceFolder}/tools/commands/doctor.sh"
+      },
+      "osx": {
+        "command": "${workspaceFolder}/tools/commands/doctor.sh"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "repo: bootstrap",
+      "type": "shell",
+      "windows": {
+        "command": "${workspaceFolder}\\tools\\commands\\bootstrap.cmd"
+      },
+      "linux": {
+        "command": "${workspaceFolder}/tools/commands/bootstrap.sh"
+      },
+      "osx": {
+        "command": "${workspaceFolder}/tools/commands/bootstrap.sh"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "repo: dev",
+      "type": "shell",
+      "windows": {
+        "command": "${workspaceFolder}\\tools\\commands\\dev.cmd"
+      },
+      "linux": {
+        "command": "${workspaceFolder}/tools/commands/dev.sh"
+      },
+      "osx": {
+        "command": "${workspaceFolder}/tools/commands/dev.sh"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "repo: build",
+      "type": "shell",
+      "windows": {
+        "command": "${workspaceFolder}\\tools\\commands\\build.cmd"
+      },
+      "linux": {
+        "command": "${workspaceFolder}/tools/commands/build.sh"
+      },
+      "osx": {
+        "command": "${workspaceFolder}/tools/commands/build.sh"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "icons: sync",
+      "type": "npm",
+      "script": "icons:sync",
+      "problemMatcher": []
+    },
+    {
+      "label": "tailwind: watch",
+      "type": "npm",
+      "script": "css:watch",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "tailwind: build",
+      "type": "npm",
+      "script": "css:build",
+      "problemMatcher": []
+    },
+    {
+      "label": "repo: repair",
+      "type": "shell",
+      "windows": {
+        "command": "${workspaceFolder}\\tools\\commands\\repair.cmd"
+      },
+      "linux": {
+        "command": "${workspaceFolder}/tools/commands/repair.sh"
+      },
+      "osx": {
+        "command": "${workspaceFolder}/tools/commands/repair.sh"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "repo: pack",
+      "type": "shell",
+      "windows": {
+        "command": "${workspaceFolder}\\tools\\commands\\pack.cmd"
+      },
+      "linux": {
+        "command": "${workspaceFolder}/tools/commands/pack.sh"
+      },
+      "osx": {
+        "command": "${workspaceFolder}/tools/commands/pack.sh"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "figma: sync export",
+      "type": "shell",
+      "command": "echo Use tools/commands/sync-figma.cmd <export.json> from a terminal.",
+      "problemMatcher": []
+    }
+  ]
+}

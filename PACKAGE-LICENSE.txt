@@ -1,0 +1,11 @@
+ShadBlazor.FreeIcon package licensing
+====================================
+
+1. ShadBlazor.FreeIcon source code, build scripts, preview application and tooling
+   are licensed under the MIT License. See LICENSE.
+
+2. The Lets Icons artwork embedded in the package is authored by Leonid Tsvetkov
+   and is licensed under Creative Commons Attribution 4.0 International
+   (CC BY 4.0). See THIRD-PARTY-NOTICES.md for attribution and source details.
+
+The two licenses apply to their respective parts of this distribution.

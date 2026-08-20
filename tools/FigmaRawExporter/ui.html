@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      margin: 16px;
+      color: #222;
+    }
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #111;
+      color: white;
+    }
+    button:disabled {
+      opacity: .5;
+      cursor: default;
+    }
+    progress {
+      width: 100%;
+      margin-top: 16px;
+    }
+    #status {
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <button id="export">Export components from current page</button>
+  <progress id="progress" max="1" value="0"></progress>
+  <div id="status">Open the Lets Icons library page, then export.</div>
+
+  <script>
+    const button = document.getElementById("export");
+    const progress = document.getElementById("progress");
+    const status = document.getElementById("status");
+
+    button.onclick = () => {
+      button.disabled = true;
+      status.textContent = "Scanning components...";
+      parent.postMessage(
+        { pluginMessage: { type: "export-current-page" } },
+        "*"
+      );
+    };
+
+    onmessage = (event) => {
+      const message = event.data.pluginMessage;
+      if (!message) return;
+
+      if (message.type === "progress") {
+        progress.max = message.total || 1;
+        progress.value = message.current || 0;
+        status.textContent =
+          `${message.current}/${message.total} — ${message.name || ""}`;
+      }
+
+      if (message.type === "download") {
+        const blob = new Blob([message.json], {
+          type: "application/json;charset=utf-8"
+        });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = message.fileName;
+        anchor.click();
+        URL.revokeObjectURL(url);
+
+        button.disabled = false;
+        status.textContent = "Export finished. JSON download started.";
+      }
+
+      if (message.type === "error") {
+        button.disabled = false;
+        status.textContent = "Error: " + message.message;
+      }
+    };
+  </script>
+</body>
+</html>

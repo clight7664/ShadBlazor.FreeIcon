@@ -1,0 +1,29 @@
+<article class="group flex min-h-40 flex-col rounded-xl border bg-card p-4 text-card-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+    <button type="button"
+            class="flex flex-1 flex-col items-center justify-center gap-4 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            title="Open @Icon.Name"
+            @onclick="Open">
+        <FreeIcon Icon="@Icon" Size="@($"{Size}px")" Style="@($"color:{Color}")" />
+        <div class="w-full min-w-0 text-center">
+            <div class="truncate text-sm font-medium">@Icon.Name</div>
+            <div class="mt-1 text-xs text-muted-foreground">@Icon.Variant</div>
+        </div>
+    </button>
+    <button type="button"
+            class="mt-3 inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-xs font-medium opacity-80 transition hover:bg-accent group-hover:opacity-100"
+            @onclick="Copy">
+        <FreeIcon Name="copy" Size="14px" />
+        Copy Razor
+    </button>
+</article>
+
+@code {
+    [Parameter, EditorRequired] public FreeIconData Icon { get; set; } = default!;
+    [Parameter] public int Size { get; set; } = 28;
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public EventCallback<FreeIconData> OnOpen { get; set; }
+    [Parameter] public EventCallback<string> OnCopy { get; set; }
+
+    private Task Open() => OnOpen.InvokeAsync(Icon);
+    private Task Copy() => OnCopy.InvokeAsync($"<FreeIcon Icon=\"@FreeIcons.{Icon.CSharpPropertyName}\" Size=\"24px\" />");
+}

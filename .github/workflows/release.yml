@@ -1,0 +1,60 @@
+name: Release NuGet
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version, for example 1.0.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  pack-and-publish:
+    runs-on: ubuntu-latest
+    env:
+      PACKAGE_VERSION: ${{ inputs.version || github.ref_name }}
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund --ignore-scripts
+      - run: npm run repo:verify
+      - run: npm run icons:sync
+      - run: npm run icons:verify
+      - run: npm run css:build
+      - run: dotnet restore ShadBlazor.FreeIcon.sln --force-evaluate
+      - run: dotnet build ShadBlazor.FreeIcon.sln -c Release --no-restore
+      - run: dotnet run --project tools/ShadBlazor.FreeIcon.Verifier/ShadBlazor.FreeIcon.Verifier.csproj -c Release --no-build
+      - name: Resolve package version
+        shell: bash
+        run: echo "VERSION=${PACKAGE_VERSION#v}" >> "$GITHUB_ENV"
+      - run: dotnet pack src/ShadBlazor.FreeIcon/ShadBlazor.FreeIcon.csproj -c Release --no-build -p:PackageVersion=${VERSION} -o release/packages
+      - name: Verify package contents
+        shell: pwsh
+        run: ./tools/quality/verify-package.ps1 -PackagePath "release/packages/ShadBlazor.FreeIcon.${env:VERSION}.nupkg" -SymbolPackagePath "release/packages/ShadBlazor.FreeIcon.${env:VERSION}.snupkg" -ExpectedVersion $env:VERSION
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-packages
+          path: release/packages/*.*nupkg
+      - name: Require NuGet.org API key
+        shell: bash
+        run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "NUGET_API_KEY is required for a release workflow." >&2
+            exit 2
+          fi
+      - name: Push package and symbols to NuGet.org
+        run: dotnet nuget push "release/packages/ShadBlazor.FreeIcon.${VERSION}.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate

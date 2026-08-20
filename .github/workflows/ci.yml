@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET SDKs
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install pinned frontend/icon tooling
+        run: npm install --no-audit --no-fund --ignore-scripts
+
+      - name: Verify repository project model
+        run: npm run repo:verify
+
+      - name: Generate all canonical icons
+        run: npm run icons:sync
+
+      - name: Verify icon catalog and SVG safety
+        run: npm run icons:verify
+
+      - name: Build Tailwind CSS
+        run: npm run css:build
+
+      - name: Restore
+        run: dotnet restore ShadBlazor.FreeIcon.sln --force-evaluate
+
+      - name: Build
+        run: dotnet build ShadBlazor.FreeIcon.sln -c Release --no-restore --nologo
+
+      - name: Verify compiled catalog
+        run: dotnet run --project tools/ShadBlazor.FreeIcon.Verifier/ShadBlazor.FreeIcon.Verifier.csproj -c Release --no-build
+
+      - name: Pack
+        run: dotnet pack src/ShadBlazor.FreeIcon/ShadBlazor.FreeIcon.csproj -c Release --no-build -o release/packages
+
+      - name: Verify package contents
+        shell: pwsh
+        run: ./tools/quality/verify-package.ps1 -PackagePath release/packages/ShadBlazor.FreeIcon.1.0.0.nupkg -SymbolPackagePath release/packages/ShadBlazor.FreeIcon.1.0.0.snupkg -ExpectedVersion 1.0.0
+
+      - name: Upload NuGet artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: release/packages/*.*nupkg

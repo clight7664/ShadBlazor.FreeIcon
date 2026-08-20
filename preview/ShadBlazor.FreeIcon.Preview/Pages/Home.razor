@@ -1,0 +1,214 @@
+@page "/"
+@page "/icons"
+@inject IJSRuntime JS
+
+<PageTitle>ShadBlazor.FreeIcon Preview</PageTitle>
+
+<section class="border-b bg-linear-to-b from-muted/40 to-background">
+    <div class="mx-auto max-w-[1600px] px-4 py-12 sm:px-6 lg:px-8">
+        <div class="max-w-3xl">
+            <div class="mb-4 inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs text-muted-foreground shadow-sm">
+                <FreeIcon Name="code" Size="14px" />
+                Blazor WebAssembly · Tailwind CSS v4 · no JS runtime dependency in the icon library
+            </div>
+            <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Browse every Lets Icons glyph from Blazor</h1>
+            <p class="mt-5 text-base leading-7 text-muted-foreground sm:text-lg">
+                Strongly typed properties for static usage, string lookup for dynamic usage, currentColor styling,
+                accessible SVG output, and safe per-instance SVG ID rewriting.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-3 text-sm">
+                <code class="rounded-md border bg-card px-3 py-2">&lt;FreeIcon Icon="@@FreeIcons.Search" /&gt;</code>
+                <code class="rounded-md border bg-card px-3 py-2">&lt;FreeIcon Name="search" /&gt;</code>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mx-auto max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">
+    <div class="grid gap-4 rounded-xl border bg-card p-4 shadow-sm md:grid-cols-[minmax(0,2fr)_minmax(180px,1fr)_minmax(160px,1fr)] lg:p-5">
+        <label class="grid gap-2 text-sm font-medium">
+            Search
+            <div class="relative">
+                <FreeIcon Name="search" Size="17px" Class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input class="h-10 w-full rounded-md border bg-background pl-10 pr-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
+                       placeholder="search, arrow, media, duotone..."
+                       @bind="_query" @bind:event="oninput" />
+            </div>
+        </label>
+
+        <label class="grid gap-2 text-sm font-medium">
+            Category
+            <select class="h-10 rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring" @bind="_category">
+                <option value="">All categories</option>
+                @foreach (var category in FreeIconRegistry.Categories)
+                {
+                    <option value="@category">@category</option>
+                }
+            </select>
+        </label>
+
+        <label class="grid gap-2 text-sm font-medium">
+            Variant
+            <select class="h-10 rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring" @bind="_variant">
+                <option value="">All variants</option>
+                @foreach (var variant in FreeIconRegistry.Variants)
+                {
+                    <option value="@variant.ToString()">@variant</option>
+                }
+            </select>
+        </label>
+    </div>
+
+    <div class="mt-5 flex flex-wrap items-center gap-4 rounded-xl border bg-muted/30 px-4 py-3 text-sm">
+        <span><strong>@Filtered.Count</strong> matching icons</span>
+        <label class="ml-auto flex items-center gap-2 text-muted-foreground">
+            Size
+            <input type="range" min="16" max="64" step="4" @bind="_size" />
+            <span class="w-10 text-right text-foreground">@_size px</span>
+        </label>
+        <label class="flex items-center gap-2 text-muted-foreground">
+            Color
+            <input type="color" class="size-8 cursor-pointer rounded border bg-transparent" @bind="_color" />
+        </label>
+    </div>
+
+    @if (_toast is not null)
+    {
+        <div class="fixed bottom-6 right-6 z-50 rounded-lg border bg-popover px-4 py-3 text-sm text-popover-foreground shadow-lg">
+            @_toast
+        </div>
+    }
+
+    <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
+        @foreach (var icon in PageItems)
+        {
+            <IconCard Icon="@icon" Size="@_size" Color="@_color" OnOpen="OpenIcon" OnCopy="CopyText" />
+        }
+    </div>
+
+    @if (PageCount > 1)
+    {
+        <div class="mt-8 flex items-center justify-center gap-3">
+            <button class="inline-flex h-9 items-center rounded-md border px-3 text-sm disabled:opacity-40 hover:bg-accent"
+                    disabled="@(_page == 1)" @onclick="PreviousPage">
+                Previous
+            </button>
+            <span class="text-sm text-muted-foreground">Page @_page of @PageCount</span>
+            <button class="inline-flex h-9 items-center rounded-md border px-3 text-sm disabled:opacity-40 hover:bg-accent"
+                    disabled="@(_page == PageCount)" @onclick="NextPage">
+                Next
+            </button>
+        </div>
+    }
+</section>
+
+@if (_selected is not null)
+{
+    <div class="fixed inset-0 z-50 grid place-items-center bg-black/55 p-4" @onclick="CloseIcon">
+        <div class="w-full max-w-lg rounded-2xl border bg-popover p-6 text-popover-foreground shadow-2xl" @onclick:stopPropagation="true">
+            <div class="flex items-start gap-4">
+                <div class="grid size-24 shrink-0 place-items-center rounded-xl border bg-background">
+                    <FreeIcon Icon="@_selected" Size="64px" Style="@($"color:{_color}")" />
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="text-xs uppercase tracking-widest text-muted-foreground">@_selected.Variant</div>
+                    <h2 class="mt-1 break-all text-xl font-semibold">@_selected.Name</h2>
+                    <div class="mt-2 flex flex-wrap gap-1">
+                        @foreach (var category in _selected.Categories)
+                        {
+                            <span class="rounded-full border px-2 py-0.5 text-xs text-muted-foreground">@category</span>
+                        }
+                    </div>
+                </div>
+                <button class="grid size-9 place-items-center rounded-md border hover:bg-accent" @onclick="CloseIcon" aria-label="Close">
+                    <FreeIcon Name="close-round" Size="18px" />
+                </button>
+            </div>
+            <div class="mt-6 grid gap-2 rounded-lg border bg-muted/50 p-4 font-mono text-xs leading-6">
+                <div>@SelectedStrongUsage</div>
+                <div class="text-muted-foreground">@SelectedDynamicUsage</div>
+            </div>
+            <button class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90"
+                    @onclick="CopySelected">
+                <FreeIcon Name="copy" Size="16px" />
+                Copy strongly typed usage
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private const int PageSize = 120;
+    private string _query = string.Empty;
+    private string _category = string.Empty;
+    private string _variant = string.Empty;
+    private string _color = "#6366f1";
+    private int _size = 28;
+    private int _page = 1;
+    private FreeIconData? _selected;
+    private string? _toast;
+    private CancellationTokenSource? _toastCts;
+
+    private IReadOnlyList<FreeIconData> Filtered
+    {
+        get
+        {
+            var variant = Enum.TryParse<FreeIconVariant>(_variant, out var selectedVariant)
+                ? selectedVariant
+                : (FreeIconVariant?)null;
+            return FreeIconRegistry.Query(new FreeIconQuery
+            {
+                Text = _query,
+                Category = _category,
+                Variant = variant,
+                Take = int.MaxValue
+            }).Items;
+        }
+    }
+
+    private int PageCount => Math.Max(1, (int)Math.Ceiling(Filtered.Count / (double)PageSize));
+    private IReadOnlyList<FreeIconData> PageItems
+    {
+        get
+        {
+            if (_page > PageCount) _page = PageCount;
+            return Filtered.Skip((_page - 1) * PageSize).Take(PageSize).ToArray();
+        }
+    }
+
+    private void PreviousPage() => _page = Math.Max(1, _page - 1);
+    private void NextPage() => _page = Math.Min(PageCount, _page + 1);
+    private void OpenIcon(FreeIconData icon) => _selected = icon;
+    private void CloseIcon() => _selected = null;
+
+    private string SelectedStrongUsage => _selected is null
+        ? string.Empty
+        : $"<FreeIcon Icon=\"@FreeIcons.{_selected.CSharpPropertyName}\" Size=\"24px\" />";
+
+    private string SelectedDynamicUsage => _selected is null
+        ? string.Empty
+        : $"<FreeIcon Name=\"{_selected.Name}\" Size=\"24px\" />";
+
+    private Task CopySelected()
+        => _selected is null ? Task.CompletedTask : CopyText(SelectedStrongUsage);
+
+    private async Task CopyText(string text)
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        _toastCts?.Cancel();
+        _toastCts?.Dispose();
+        _toastCts = new CancellationTokenSource();
+        _toast = "Copied to clipboard";
+        try
+        {
+            await Task.Delay(1600, _toastCts.Token);
+            _toast = null;
+            StateHasChanged();
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+}
+
+

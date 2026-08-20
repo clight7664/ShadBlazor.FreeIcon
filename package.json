@@ -1,0 +1,23 @@
+{
+  "name": "shadblazor-freeicon-workspace",
+  "private": true,
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "icons:sync": "node tools/icons/sync-icons.mjs",
+    "icons:verify": "node tools/icons/verify-icons.mjs",
+    "repo:verify": "node tools/quality/verify-repository.mjs",
+    "css:build": "npx @tailwindcss/cli -i ./configs/tailwind/app.css -o ./preview/ShadBlazor.FreeIcon.Preview/wwwroot/css/app.css --minify",
+    "css:watch": "npx @tailwindcss/cli -i ./configs/tailwind/app.css -o ./preview/ShadBlazor.FreeIcon.Preview/wwwroot/css/app.css --watch",
+    "dev": "node tools/scripts/dev.mjs",
+    "pages:prepare": "node tools/pages/prepare-pages.mjs",
+    "verify": "npm run repo:verify && npm run icons:verify"
+  },
+  "devDependencies": {
+    "@iconify-json/lets-icons": "1.2.2",
+    "@tailwindcss/cli": "4.3.3",
+    "tailwindcss": "4.3.3"
+  }
+}

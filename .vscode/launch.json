@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "blazorwasm",
+      "name": "Preview: Blazor WebAssembly",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/preview/ShadBlazor.FreeIcon.Preview",
+      "url": "http://localhost:5188",
+      "browser": "edge",
+      "timeout": 60000,
+      "preLaunchTask": "tailwind: build"
+    },
+    {
+      "type": "blazorwasm",
+      "name": "Preview: Attach",
+      "request": "attach",
+      "url": "http://localhost:5188"
+    }
+  ]
+}

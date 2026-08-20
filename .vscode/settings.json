@@ -1,0 +1,13 @@
+{
+  "dotnet.defaultSolution": "ShadBlazor.FreeIcon.sln",
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "**/bin": true,
+    "**/obj": true
+  },
+  "tailwindCSS.experimental.configFile": "configs/tailwind/app.css",
+  "tailwindCSS.classAttributes": [
+    "class",
+    "Class"
+  ]
+}

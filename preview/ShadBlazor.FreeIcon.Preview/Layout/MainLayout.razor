@@ -1,0 +1,39 @@
+@inherits LayoutComponentBase
+
+<div class="@ThemeClass min-h-screen bg-background text-foreground transition-colors">
+    <header class="sticky top-0 z-40 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+        <div class="mx-auto flex h-16 max-w-[1600px] items-center gap-4 px-4 sm:px-6 lg:px-8">
+            <a href="./" class="flex min-w-0 items-center gap-3 font-semibold tracking-tight">
+                <span class="grid size-9 place-items-center rounded-lg border bg-card shadow-sm">
+                    <FreeIcon Name="3d-box" Size="20px" />
+                </span>
+                <span class="truncate">ShadBlazor.FreeIcon</span>
+            </a>
+            <div class="ml-auto flex items-center gap-2">
+                <span class="hidden rounded-full border bg-muted px-3 py-1 text-xs text-muted-foreground sm:inline-flex">
+                    @FreeIconRegistry.All.Count icons
+                </span>
+                <button type="button"
+                        class="inline-flex size-9 items-center justify-center rounded-md border bg-background shadow-sm hover:bg-accent"
+                        title="Toggle theme"
+                        @onclick="ToggleTheme">
+                    <FreeIcon Name="@(_dark ? "sun" : "moon")" Size="18px" />
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        @Body
+    </main>
+
+    <footer class="border-t py-8 text-center text-sm text-muted-foreground">
+        Library code: MIT · Lets Icons artwork: CC BY 4.0
+    </footer>
+</div>
+
+@code {
+    private bool _dark;
+    private string ThemeClass => _dark ? "dark" : string.Empty;
+    private void ToggleTheme() => _dark = !_dark;
+}

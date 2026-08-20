@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "ShadBlazor.FreeIcon.sln",
+    "projects": [
+      "src\\ShadBlazor.FreeIcon\\ShadBlazor.FreeIcon.csproj",
+      "preview\\ShadBlazor.FreeIcon.Preview\\ShadBlazor.FreeIcon.Preview.csproj"
+    ]
+  }
+}

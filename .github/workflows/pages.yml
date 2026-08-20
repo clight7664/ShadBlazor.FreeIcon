@@ -1,0 +1,49 @@
+name: Preview Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund --ignore-scripts
+      - run: npm run repo:verify
+      - run: npm run icons:sync
+      - run: npm run icons:verify
+      - run: npm run css:build
+      - run: dotnet publish preview/ShadBlazor.FreeIcon.Preview/ShadBlazor.FreeIcon.Preview.csproj -c Release -o artifacts/preview
+      - name: Prepare SPA for GitHub Pages
+        run: node tools/pages/prepare-pages.mjs artifacts/preview/wwwroot
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifacts/preview/wwwroot
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
