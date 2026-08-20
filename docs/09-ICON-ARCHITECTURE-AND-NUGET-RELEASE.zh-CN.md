@@ -526,6 +526,23 @@ https://api.nuget.org/v3-flatcontainer/shadblazor.freeicon/index.json
 
 索引通常不是瞬时完成。提交成功后可以间隔检查，但不要重复上传相同版本。
 
+### 14.1 v1.0.0 实际线上结果
+
+2026-08-20，维护者账号 `clight` 通过 NuGet.org 网页 Upload 流程提交主包。
+NuGet.org 随后完成包验证和公开索引；再从一个全新 .NET 8 控制台项目仅使用
+`https://api.nuget.org/v3/index.json` 执行还原，成功下载并解析
+`ShadBlazor.FreeIcon/1.0.0`。
+
+```text
+Package URL: https://www.nuget.org/packages/ShadBlazor.FreeIcon/1.0.0
+Main package: published, validated and indexed
+Public restore: passed
+Symbol package: locally verified; requires the scoped NuGet V3 API-key flow
+```
+
+网页发布主包不会自动取得维护者的 API Key，也不能代替 `.snupkg` 的 V3
+推送。需要符号服务器支持时，按第 12 或第 13 节完成符号包发布。
+
 ## 15. 回滚、撤回和紧急修复
 
 NuGet.org 不允许覆盖或重新上传已存在的 `Package ID + Version`。
@@ -599,7 +616,9 @@ npm run icons:verify
 
 ### Symbol Package 未出现
 
-确认 `.snupkg` 与 `.nupkg` 的 Package ID、Version 一致，并使用 CLI 自动符号推送或在 Upload 页面单独上传 `.snupkg`。
+确认 `.snupkg` 与 `.nupkg` 的 Package ID、Version 一致，并使用第 12 节的
+NuGet V3 CLI 命令或第 13 节的 GitHub Actions 流程推送。不要把网页 Upload
+页面当作符号服务器发布流程。
 
 ## 17. 每次发布的记录模板
 

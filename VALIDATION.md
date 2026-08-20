@@ -55,5 +55,22 @@ SHA-256:
 A3E6D4D24E916F8CC3BAC383FE68B605B193C799EEC0C400ABEE1570878C057F  ShadBlazor.FreeIcon.1.0.0.snupkg
 ```
 
-NuGet.org returned 404 for the package flat-container endpoint before publication,
-which confirms that version 1.0.0 was not already visible at validation time.
+## NuGet.org publication
+
+The main package was submitted through the authenticated NuGet.org Upload workflow
+on 2026-08-20. NuGet.org completed package validation and public indexing, and the
+published page is:
+
+```text
+https://www.nuget.org/packages/ShadBlazor.FreeIcon/1.0.0
+```
+
+A clean public-source smoke test then restored
+`ShadBlazor.FreeIcon/1.0.0` directly from
+`https://api.nuget.org/v3/index.json`. NuGet returned the indexed version and the
+package content hash, confirming that consumers can install the public release.
+
+The `.snupkg` remains a locally verified release artifact. The browser Upload
+workflow published the main `.nupkg` only; publishing symbols requires the scoped
+NuGet V3 API-key flow documented in
+`docs/09-ICON-ARCHITECTURE-AND-NUGET-RELEASE.zh-CN.md`.
