@@ -60,7 +60,7 @@ jobs:
         run: ./tools/quality/verify-package.ps1 -PackagePath release/packages/ShadBlazor.FreeIcon.1.0.0.nupkg -SymbolPackagePath release/packages/ShadBlazor.FreeIcon.1.0.0.snupkg -ExpectedVersion 1.0.0
 
       - name: Upload NuGet artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nuget-packages
           path: release/packages/*.*nupkg
