@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@iconify-json/lets-icons": "1.2.2",
-    "@tailwindcss/cli": "4.3.3",
+    "@tailwindcss/cli": "4.3.4",
     "tailwindcss": "4.3.3"
   }
 }
